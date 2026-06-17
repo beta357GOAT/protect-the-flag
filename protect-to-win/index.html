@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protect to Win: Neon Flag Assault</title>
+    <meta name="description" content="Capture the flag, defeat enemy bots, earn coins, and buy unstoppable weapons in this tactical team shooter.">
+    <!-- Google Fonts: Inter and Orbitron for tech HUD feel -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app-container">
+        <!-- Main Menu Overlay -->
+        <div id="menu-overlay" class="overlay">
+            <div class="menu-box glass">
+                <h1>PROTECT TO WIN</h1>
+                <p class="subtitle">NEON FLAG ASSAULT</p>
+                
+                <div class="game-info-panel">
+                    <h3>CAPTURE THE FLAG RULES</h3>
+                    <ul>
+                        <li>🔴 You are on the <strong>RED TEAM</strong>. Your base is on the left.</li>
+                        <li>🔵 The <strong>BLUE TEAM</strong> base is on the right.</li>
+                        <li>🚩 Run to the enemy base, grab their flag, and carry it back to your base to score!</li>
+                        <li>💰 Each enemy kill earns you <strong>$100</strong>. Buy tiers in the shop to be unstoppable!</li>
+                    </ul>
+                </div>
+
+                <div class="instructions-panel">
+                    <h3>COMBAT CONTROLS</h3>
+                    <div class="controls-grid">
+                        <div class="control-item"><span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span> Move Soldier</div>
+                        <div class="control-item"><span class="key">MOUSE</span> Aim Weapon</div>
+                        <div class="control-item"><span class="key">L-CLICK</span> Fire Weapon</div>
+                        <div class="control-item"><span class="key">B</span> / <span class="key">P</span> Toggle Weapons Shop</div>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button id="btn-start" class="btn-primary glow-cyan">START MATCH</button>
+                    <button id="btn-audio-toggle" class="btn-secondary">🔊 SOUND: ON</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- In-game Canvas -->
+        <canvas id="gameCanvas"></canvas>
+
+        <!-- Dynamic Game HUD -->
+        <div id="game-hud" class="hud-hidden">
+            <!-- Top HUD Panel -->
+            <div class="hud-top">
+                <!-- Score Board -->
+                <div class="hud-element glow-blue score-board">
+                    <span class="hud-label">MATCH SCORE</span>
+                    <div class="score-display">
+                        <span id="score-red" class="red-score">RED: 0</span>
+                        <span class="divider">|</span>
+                        <span id="score-blue" class="blue-score">BLUE: 0</span>
+                    </div>
+                </div>
+
+                <!-- Health / Shield Bar -->
+                <div class="hud-element glow-green" id="health-hud">
+                    <span class="hud-label">SOLDIER HULL</span>
+                    <div class="health-bar-container">
+                        <div id="health-bar" class="health-bar-fill" style="width: 100%;"></div>
+                    </div>
+                    <span id="health-text" class="hud-value">100%</span>
+                </div>
+
+                <!-- Weapon Card -->
+                <div class="hud-element glow-magenta" id="weapon-hud">
+                    <span class="hud-label">EQUIPPED ARMAMENT</span>
+                    <span id="weapon-name" class="hud-value text-glow">COMMON BLASTER</span>
+                    <span id="weapon-rarity" class="rarity-badge common">COMMON</span>
+                </div>
+
+                <!-- Coins / Wallet -->
+                <div class="hud-element glow-orange" id="wallet-hud">
+                    <span class="hud-label">CREDIT BALANCE</span>
+                    <span id="wallet-balance" class="hud-value money-glow">$0</span>
+                </div>
+            </div>
+
+            <!-- Flag Status Alerts -->
+            <div class="flag-status-container">
+                <div id="red-flag-status" class="flag-status home">🔴 RED FLAG: AT BASE</div>
+                <div id="blue-flag-status" class="flag-status home">🔵 BLUE FLAG: AT BASE</div>
+            </div>
+
+            <!-- Warning Banner Overlay -->
+            <div id="warning-banner" class="warning-banner-hidden">
+                <span class="warning-icon">⚠️</span>
+                <span id="warning-message">RED FLAG STOLEN!</span>
+            </div>
+            
+            <button id="btn-shop-toggle" class="btn-shop-hud">🛒 WEAPONS SHOP (B)</button>
+        </div>
+
+        <!-- Weapons Shop Overlay (Sidebar Panel) -->
+        <div id="shop-overlay" class="shop-hidden">
+            <div class="shop-panel glass">
+                <div class="shop-header">
+                    <h2>WEAPONS ARMORY</h2>
+                    <p>Earn $100 per kill. Higher tiers deal massive structural damage!</p>
+                    <div class="shop-wallet">CREDITS: <span id="shop-wallet-balance">$0</span></div>
+                </div>
+
+                <div class="shop-items-container">
+                    <!-- Common Blaster -->
+                    <div class="shop-card rarity-common active" id="item-common">
+                        <div class="item-info">
+                            <span class="item-title">Common Blaster</span>
+                            <span class="item-desc">Reliable laser emitter. Fires single straight rounds.</span>
+                        </div>
+                        <button class="btn-buy" data-item="common" data-price="0">EQUIPPED</button>
+                    </div>
+
+                    <!-- Rare Burst Rifle -->
+                    <div class="shop-card rarity-rare" id="item-rare">
+                        <div class="item-info">
+                            <span class="item-title">Rare Burst Rifle ($10)</span>
+                            <span class="item-desc">Rapid fire. Emits 3-shot bursts in quick succession.</span>
+                        </div>
+                        <button class="btn-buy" data-item="rare" data-price="10">BUY $10</button>
+                    </div>
+
+                    <!-- Epic Spread Shotgun -->
+                    <div class="shop-card rarity-epic" id="item-epic">
+                        <div class="item-info">
+                            <span class="item-title">Epic Spread Shotgun ($20)</span>
+                            <span class="item-desc">Heavy spread. Fires a fanning layout of 5 shotgun shells.</span>
+                        </div>
+                        <button class="btn-buy" data-item="epic" data-price="20">BUY $20</button>
+                    </div>
+
+                    <!-- Legendary Plasma Launcher -->
+                    <div class="shop-card rarity-legendary" id="item-legendary">
+                        <div class="item-info">
+                            <span class="item-title">Legendary Plasma ($35)</span>
+                            <span class="item-desc">Slow reload. Launches heavy plasma shells with splash blast radius.</span>
+                        </div>
+                        <button class="btn-buy" data-item="legendary" data-price="35">BUY $35</button>
+                    </div>
+
+                    <!-- Unique Lightning Laser -->
+                    <div class="shop-card rarity-unique" id="item-unique">
+                        <div class="item-info">
+                            <span class="item-title">Unique Lightning ($50)</span>
+                            <span class="item-desc">Continuous energy stream. Melts through multiple enemies instantly.</span>
+                        </div>
+                        <button class="btn-buy" data-item="unique" data-price="50">BUY $50</button>
+                    </div>
+
+                    <!-- Unstoppable Swarm Launcher -->
+                    <div class="shop-card rarity-unstoppable" id="item-unstoppable">
+                        <div class="item-info">
+                            <span class="item-title">Unstoppable Swarm ($100)</span>
+                            <span class="item-desc">Homing micro-missiles. Launches 4 rockets that seek closest targets.</span>
+                        </div>
+                        <button class="btn-buy" data-item="unstoppable" data-price="100">BUY $100</button>
+                    </div>
+                </div>
+
+                <button id="btn-shop-close" class="btn-close-shop">BACK TO BATTLE</button>
+            </div>
+        </div>
+
+        <!-- Game Over & Victory Overlay -->
+        <div id="game-over-overlay" class="overlay hidden">
+            <div class="menu-box glass">
+                <h1 id="end-title" class="text-glow-red">MATCH DEFEAT</h1>
+                <p id="end-message" class="end-msg">Blue Team captured the flag 3 times!</p>
+                <div class="final-stats" id="end-stats">
+                    <!-- Dynamic stats injected here -->
+                </div>
+                <div class="action-buttons">
+                    <button id="btn-restart" class="btn-primary glow-cyan">PLAY AGAIN</button>
+                    <button id="btn-main-menu" class="btn-secondary">MAIN MENU</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game scripts -->
+    <script src="audio.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>

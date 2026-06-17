@@ -1,0 +1,773 @@
+/* CSS variable tokens for color codes, rarity status, and formatting */
+:root {
+    --bg-dark: #090613;
+    --bg-panel: rgba(14, 9, 28, 0.75);
+    
+    --neon-cyan: #00f2fe;
+    --neon-cyan-glow: rgba(0, 242, 254, 0.5);
+    
+    --neon-magenta: #ff007f;
+    --neon-magenta-glow: rgba(255, 0, 127, 0.5);
+    
+    --neon-green: #39ff14;
+    --neon-green-glow: rgba(57, 255, 20, 0.5);
+    
+    --neon-orange: #ff9900;
+    --neon-orange-glow: rgba(255, 153, 0, 0.5);
+    
+    --neon-red: #ff3333;
+    --neon-red-glow: rgba(255, 51, 51, 0.6);
+    
+    --neon-yellow: #ffff33;
+    
+    --font-header: 'Orbitron', -apple-system, sans-serif;
+    --font-body: 'Inter', -apple-system, sans-serif;
+
+    /* Rarity Ranks Colors */
+    --color-common: #8e94a5;
+    --color-rare: #39ff14;
+    --color-epic: #a855f7;
+    --color-legendary: #ff9900;
+    --color-unique: #00f2fe;
+    --color-unstoppable: #ff0055;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: #f0edf9;
+    font-family: var(--font-body);
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+}
+
+/* Main Viewport Shell */
+#app-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: radial-gradient(circle at center, #180e30 0%, #050308 100%);
+}
+
+#app-container::after {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+    background-size: 100% 4px;
+    z-index: 100;
+    pointer-events: none;
+    opacity: 0.4;
+}
+
+canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+/* Glassmorphism Panel styles */
+.glass {
+    background: var(--bg-panel);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.7);
+    border-radius: 12px;
+}
+
+/* Menu Overlays */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    background: rgba(5, 3, 10, 0.82);
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    opacity: 1;
+    visibility: visible;
+}
+
+.overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.menu-box {
+    width: 90%;
+    max-width: 650px;
+    padding: 2.5rem;
+    text-align: center;
+    border-top: 3px solid var(--neon-cyan);
+    box-shadow: 0 0 30px var(--neon-cyan-glow);
+    animation: glow-pulse 3s infinite alternate;
+}
+
+.menu-box h1 {
+    font-family: var(--font-header);
+    font-size: 2.8rem;
+    font-weight: 900;
+    letter-spacing: 3px;
+    background: linear-gradient(135deg, #00f2fe 0%, #ff007f 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.2rem;
+    filter: drop-shadow(0 0 10px rgba(0, 242, 254, 0.35));
+}
+
+.menu-box .subtitle {
+    font-family: var(--font-header);
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 6px;
+    color: var(--neon-magenta);
+    margin-bottom: 2rem;
+}
+
+/* Instructions lists */
+.game-info-panel {
+    background: rgba(0, 0, 0, 0.35);
+    border-radius: 8px;
+    padding: 1.2rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    text-align: left;
+}
+
+.game-info-panel h3 {
+    font-family: var(--font-header);
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    color: var(--neon-cyan);
+    margin-bottom: 0.8rem;
+    text-align: center;
+}
+
+.game-info-panel ul {
+    list-style: none;
+    font-size: 0.85rem;
+    color: #c9c5db;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.instructions-panel {
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    padding: 1.2rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    text-align: left;
+}
+
+.instructions-panel h3 {
+    font-family: var(--font-header);
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    color: var(--neon-magenta);
+    margin-bottom: 0.8rem;
+    text-align: center;
+}
+
+.controls-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+}
+
+.control-item {
+    font-size: 0.82rem;
+    display: flex;
+    align-items: center;
+    color: #c9c5db;
+}
+
+.key {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    padding: 0.1rem 0.4rem;
+    margin-right: 0.5rem;
+    font-family: var(--font-header);
+    font-size: 0.72rem;
+    font-weight: bold;
+    color: #ffffff;
+    box-shadow: 0 2px 0 rgba(0,0,0,0.5);
+    display: inline-block;
+    min-width: 22px;
+    text-align: center;
+}
+
+/* Buttons */
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+}
+
+.btn-primary {
+    font-family: var(--font-header);
+    font-weight: bold;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    padding: 0.85rem 2.2rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    background: linear-gradient(90deg, #00f2fe 0%, #4facfe 100%);
+    color: #05030a;
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px var(--neon-cyan);
+}
+
+.btn-secondary {
+    font-family: var(--font-header);
+    font-weight: bold;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    padding: 0.85rem 1.8rem;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: #ffffff;
+}
+
+/* Dynamic HUD Panel Layouts */
+#game-hud {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: opacity 0.3s ease;
+}
+
+#game-hud.hud-hidden {
+    opacity: 0;
+}
+
+.hud-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.hud-element {
+    background: var(--bg-panel);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 0.7rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    min-width: 180px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+}
+
+.hud-element.glow-blue { border-left: 3px solid var(--neon-cyan); }
+.hud-element.glow-green { border-left: 3px solid var(--neon-green); }
+.hud-element.glow-magenta { border-left: 3px solid var(--neon-magenta); }
+.hud-element.glow-orange { border-left: 3px solid var(--neon-orange); }
+
+.hud-label {
+    font-family: var(--font-header);
+    font-size: 0.6rem;
+    letter-spacing: 1.5px;
+    color: #8c88a5;
+    margin-bottom: 0.25rem;
+}
+
+.hud-value {
+    font-family: var(--font-header);
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #ffffff;
+}
+
+/* Score display specific details */
+.score-board {
+    min-width: 200px;
+}
+
+.score-display {
+    display: flex;
+    justify-content: space-around;
+    font-family: var(--font-header);
+    font-weight: 900;
+    font-size: 1.1rem;
+    margin-top: 0.1rem;
+}
+
+.red-score {
+    color: var(--neon-magenta);
+    text-shadow: 0 0 8px var(--neon-magenta-glow);
+}
+
+.blue-score {
+    color: var(--neon-cyan);
+    text-shadow: 0 0 8px var(--neon-cyan-glow);
+}
+
+.divider {
+    color: rgba(255, 255, 255, 0.2);
+}
+
+/* Hull Health bar */
+.health-bar-container {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    margin: 0.2rem 0;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.health-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #39ff14 0%, #66ff66 100%);
+    box-shadow: 0 0 10px var(--neon-green-glow);
+    transition: width 0.15s ease, background 0.3s ease;
+}
+
+.health-bar-fill.warning {
+    background: linear-gradient(90deg, #ff9900 0%, #ffcc00 100%);
+    box-shadow: 0 0 10px var(--neon-orange-glow);
+}
+
+.health-bar-fill.critical {
+    background: linear-gradient(90deg, #ff3333 0%, #ff6666 100%);
+    box-shadow: 0 0 10px var(--neon-red-glow);
+    animation: flash 0.5s infinite alternate;
+}
+
+/* Rarity Badges styling */
+.rarity-badge {
+    align-self: flex-start;
+    font-family: var(--font-header);
+    font-size: 0.6rem;
+    font-weight: 900;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    margin-top: 0.3rem;
+    color: #050308;
+    text-transform: uppercase;
+}
+
+.rarity-badge.common { background-color: var(--color-common); }
+.rarity-badge.rare { background-color: var(--color-rare); box-shadow: 0 0 6px var(--color-rare); }
+.rarity-badge.epic { background-color: var(--color-epic); color: #fff; box-shadow: 0 0 6px var(--color-epic); }
+.rarity-badge.legendary { background-color: var(--color-legendary); box-shadow: 0 0 6px var(--color-legendary); }
+.rarity-badge.unique { background-color: var(--color-unique); box-shadow: 0 0 6px var(--color-unique); }
+.rarity-badge.unstoppable { background-color: var(--color-unstoppable); color: #fff; box-shadow: 0 0 6px var(--color-unstoppable); }
+
+/* Money Wallet indicator */
+.money-glow {
+    color: var(--neon-green) !important;
+    text-shadow: 0 0 8px var(--neon-green-glow);
+}
+
+/* Flag status alert bars */
+.flag-status-container {
+    position: absolute;
+    top: 90px;
+    left: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.flag-status {
+    background: var(--bg-panel);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    padding: 0.4rem 1rem;
+    font-family: var(--font-header);
+    font-weight: bold;
+    font-size: 0.75rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    backdrop-filter: blur(5px);
+}
+
+.flag-status.home {
+    border-left: 3px solid var(--neon-cyan);
+}
+
+.flag-status.stolen {
+    border-left: 3px solid var(--neon-magenta);
+    color: var(--neon-magenta);
+    animation: pulse 1s infinite alternate;
+}
+
+/* HUD Button for Shop */
+.btn-shop-hud {
+    position: absolute;
+    bottom: 1.2rem;
+    left: 1.2rem;
+    pointer-events: auto;
+    font-family: var(--font-header);
+    font-weight: bold;
+    font-size: 0.85rem;
+    padding: 0.7rem 1.5rem;
+    background: var(--bg-panel);
+    border: 1px solid var(--neon-orange);
+    color: var(--neon-orange);
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    transition: all 0.2s ease;
+    backdrop-filter: blur(5px);
+}
+
+.btn-shop-hud:hover {
+    background: rgba(255, 153, 0, 0.12);
+    box-shadow: 0 0 15px var(--neon-orange-glow);
+    transform: scale(1.03);
+}
+
+/* Bottom Gauge Instrumentation */
+.hud-bottom {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    width: 100%;
+}
+
+.dashboard-gauge {
+    background: var(--bg-panel);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    min-width: 110px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(6px);
+}
+
+.gauge-label {
+    font-family: var(--font-header);
+    font-size: 0.55rem;
+    letter-spacing: 1px;
+    color: #8c88a5;
+    display: block;
+    margin-bottom: 0.2rem;
+}
+
+.gauge-value {
+    font-family: var(--font-header);
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #ffffff;
+}
+
+.gauge-value.status-ready {
+    color: var(--neon-green);
+    text-shadow: 0 0 8px var(--neon-green-glow);
+}
+
+.gauge-value.status-reloading {
+    color: #a09cb4;
+}
+
+/* Warning Banner alert overlay */
+#warning-banner {
+    position: absolute;
+    top: 18%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 0, 80, 0.15);
+    border: 1px solid var(--neon-magenta);
+    border-radius: 6px;
+    padding: 0.8rem 2.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 0 25px var(--neon-magenta-glow);
+    font-family: var(--font-header);
+    font-weight: 700;
+    font-size: 1.15rem;
+    letter-spacing: 2px;
+    color: var(--neon-magenta);
+    text-shadow: 0 0 8px var(--neon-magenta-glow);
+    animation: warning-flicker 1.5s infinite;
+    z-index: 4;
+}
+
+#warning-banner.warning-banner-hidden {
+    display: none;
+}
+
+/* Sidebar Weapons Shop Panel */
+#shop-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 8;
+    background: rgba(5, 3, 10, 0.65);
+    display: flex;
+    justify-content: flex-end;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    opacity: 1;
+    visibility: visible;
+}
+
+#shop-overlay.shop-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.shop-panel {
+    width: 100%;
+    max-width: 480px;
+    height: 100%;
+    border-left: 2px solid var(--neon-orange);
+    box-shadow: -10px 0 35px rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    padding: 2.2rem;
+    overflow-y: auto;
+    border-radius: 0;
+    animation: border-pulse 4s infinite alternate;
+}
+
+.shop-header {
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    padding-bottom: 1rem;
+}
+
+.shop-header h2 {
+    font-family: var(--font-header);
+    font-size: 1.8rem;
+    color: #ffffff;
+    letter-spacing: 2px;
+    margin-bottom: 0.3rem;
+    text-shadow: 0 0 10px var(--neon-orange-glow);
+}
+
+.shop-header p {
+    font-size: 0.8rem;
+    color: #8c88a5;
+    margin-bottom: 0.8rem;
+}
+
+.shop-wallet {
+    font-family: var(--font-header);
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: var(--neon-green);
+    text-shadow: 0 0 8px var(--neon-green-glow);
+}
+
+/* Shop Items List */
+.shop-items-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    flex-grow: 1;
+    overflow-y: auto;
+    margin-bottom: 1.5rem;
+    padding-right: 0.3rem;
+}
+
+.shop-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+.shop-card:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    max-width: 70%;
+}
+
+.item-title {
+    font-family: var(--font-header);
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.item-desc {
+    font-size: 0.72rem;
+    color: #8c88a5;
+    line-height: 1.3;
+}
+
+/* Rarity classes for cards borders highlights */
+.shop-card.rarity-common { border-left: 3px solid var(--color-common); }
+.shop-card.rarity-rare { border-left: 3px solid var(--color-rare); }
+.shop-card.rarity-epic { border-left: 3px solid var(--color-epic); }
+.shop-card.rarity-legendary { border-left: 3px solid var(--color-legendary); }
+.shop-card.rarity-unique { border-left: 3px solid var(--color-unique); }
+.shop-card.rarity-unstoppable { border-left: 3px solid var(--color-unstoppable); }
+
+/* Buttons inside Shop item */
+.btn-buy {
+    font-family: var(--font-header);
+    font-size: 0.75rem;
+    font-weight: 900;
+    padding: 0.5rem 1rem;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: transparent;
+    color: #ffffff;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    min-width: 90px;
+}
+
+.btn-buy:hover {
+    background: #ffffff;
+    color: #000;
+}
+
+/* Highlighting bought/equipped weapon buttons */
+.shop-card.rarity-common button:hover { background-color: var(--color-common); color: #000; border-color: var(--color-common); }
+.shop-card.rarity-rare button { border-color: var(--color-rare); color: var(--color-rare); }
+.shop-card.rarity-rare button:hover { background-color: var(--color-rare); color: #000; }
+
+.shop-card.rarity-epic button { border-color: var(--color-epic); color: var(--color-epic); }
+.shop-card.rarity-epic button:hover { background-color: var(--color-epic); color: #fff; }
+
+.shop-card.rarity-legendary button { border-color: var(--color-legendary); color: var(--color-legendary); }
+.shop-card.rarity-legendary button:hover { background-color: var(--color-legendary); color: #000; }
+
+.shop-card.rarity-unique button { border-color: var(--color-unique); color: var(--color-unique); }
+.shop-card.rarity-unique button:hover { background-color: var(--color-unique); color: #000; }
+
+.shop-card.rarity-unstoppable button { border-color: var(--color-unstoppable); color: var(--color-unstoppable); }
+.shop-card.rarity-unstoppable button:hover { background-color: var(--color-unstoppable); color: #fff; }
+
+.shop-card.active button {
+    background: rgba(255,255,255,0.1) !important;
+    border-color: rgba(255,255,255,0.3) !important;
+    color: #8c88a5 !important;
+    cursor: default;
+    pointer-events: none;
+}
+
+.btn-close-shop {
+    font-family: var(--font-header);
+    font-weight: bold;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    padding: 0.8rem;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #ffffff;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.btn-close-shop:hover {
+    border-color: #ffffff;
+    background: rgba(255,255,255,0.03);
+}
+
+/* Animations keys */
+@keyframes glow-pulse {
+    0% { box-shadow: 0 0 15px rgba(0, 242, 254, 0.2); border-color: rgba(0, 242, 254, 0.25); }
+    100% { box-shadow: 0 0 28px rgba(0, 242, 254, 0.5); border-color: rgba(0, 242, 254, 0.6); }
+}
+
+@keyframes border-pulse {
+    0% { border-color: rgba(255, 153, 0, 0.3); }
+    100% { border-color: rgba(255, 153, 0, 0.85); }
+}
+
+@keyframes warning-flicker {
+    0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; box-shadow: 0 0 25px var(--neon-magenta-glow); }
+    20%, 24%, 55% { opacity: 0.5; box-shadow: 0 0 5px rgba(255, 0, 127, 0.2); }
+}
+
+@keyframes flash {
+    0% { opacity: 1; }
+    100% { opacity: 0.25; }
+}
+
+@keyframes pulse {
+    0% { transform: scale(0.97); }
+    100% { transform: scale(1.03); }
+}
+
+.end-msg {
+    margin: 1rem 0 1.8rem 0;
+    color: #c9c5db;
+    font-size: 1rem;
+}
+
+.final-stats {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 2.2rem;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 1.2rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.stat-val {
+    font-family: var(--font-header);
+    font-weight: bold;
+    font-size: 1.35rem;
+    color: var(--neon-cyan);
+    display: block;
+    margin-top: 0.25rem;
+}
